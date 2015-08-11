@@ -1,15 +1,23 @@
 package com.yc.health;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.kymjs.kjframe.KJActivity;
 import org.kymjs.kjframe.ui.BindView;
 
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
+import com.baidu.location.LocationClientOption.LocationMode;
+import com.baidu.location.Poi;
 import com.yc.health.adapter.MyListAdapter;
 import com.yc.health.fragment.PersonalPopupWindow;
 import com.yc.health.http.HttpUserRequest;
 import com.yc.health.manager.ActivityManager;
 import com.yc.health.model.MemberUserModel;
+import com.yc.health.util.Logutil;
 import com.yc.health.util.Method;
 
 import android.annotation.SuppressLint;
@@ -29,7 +37,9 @@ import android.widget.PopupWindow.OnDismissListener;
 import android.widget.TextView;
 
 public class PersonalActivity extends KJActivity implements OnGestureListener{
-
+	private LocationMode tempMode=LocationMode.Hight_Accuracy;
+	private LocationClient mLocationClient;
+	private String tempcoor="bd09ll";
 	@BindView(id = R.id.personal_back, click = true)
 	private ImageView backBtn;
 	@BindView(id = R.id.personal_headimg, click = true)
@@ -72,8 +82,34 @@ public class PersonalActivity extends KJActivity implements OnGestureListener{
 	@Override
 	public void setRootView() {
 		setContentView(R.layout.personal);
+		initLocation();
+        mLocationClient.start();//定位SDK start之后会默认发起一次定位请求，开发者无须判断isstart并主动调用request
 	}
-
+    private void initLocation(){
+        LocationClientOption option = new LocationClientOption();
+        option.setLocationMode(tempMode);//可选，默认高精度，设置定位模式，高精度，低功耗，仅设备
+        option.setCoorType(tempcoor);//可选，默认gcj02，设置返回的定位结果坐标系，
+        int span=1000;
+        option.setScanSpan(span);//可选，默认0，即仅定位一次，设置发起定位请求的间隔需要大于等于1000ms才是有效的
+        option.setIsNeedAddress(true);//可选，设置是否需要地址信息，默认不需要
+        option.setOpenGps(true);//可选，默认false,设置是否使用gps
+        option.setLocationNotify(true);//可选，默认false，设置是否当gps有效时按照1S1次频率输出GPS结果
+        option.setIgnoreKillProcess(true);//可选，默认true，定位SDK内部是一个SERVICE，并放到了独立进程，设置是否在stop的时候杀死这个进程，默认不杀死
+        option.setEnableSimulateGps(false);//可选，默认false，设置是否需要过滤gps仿真结果，默认需要
+        option.setIsNeedLocationDescribe(true);//可选，默认false，设置是否需要位置语义化结果，可以在BDLocation.getLocationDescribe里得到，结果类似于“在北京天安门附近”
+        option.setIsNeedLocationPoiList(true);//可选，默认false，设置是否需要POI结果，可以在BDLocation.getPoiList里得到
+        mLocationClient = new LocationClient(this.getApplicationContext());
+        mLocationClient.setLocOption(option);
+        MyLocationListener mMyLocationListener = new MyLocationListener();
+        mLocationClient.registerLocationListener(mMyLocationListener);
+    }
+    
+	@Override
+	protected void onStop() {
+		// TODO Auto-generated method stub
+		mLocationClient.stop();
+		super.onStop();
+	}
 	@SuppressLint("WorldReadableFiles") 
 	@SuppressWarnings("deprecation")
 	@Override
@@ -93,8 +129,8 @@ public class PersonalActivity extends KJActivity implements OnGestureListener{
 		String loginName = userPreferences.getString("loginName", null);
 		
 		HttpUserRequest request = new HttpUserRequest(aty,mHandler,6);
-		request.getUserInit(loginName);
-		request.start();
+		//request.getUserInit(loginName);
+		//request.start();
 	}
 	
 	private void init() {
@@ -217,4 +253,21 @@ public class PersonalActivity extends KJActivity implements OnGestureListener{
 	public boolean onSingleTapUp(MotionEvent arg0) {
 		return false;
 	}
+	/**
+     * 实现实时位置回调监听
+     */
+    public class MyLocationListener implements BDLocationListener {
+
+        @Override
+        public void onReceiveLocation(BDLocation location) {
+            //Receive Location
+        	String pro=location.getProvince();
+        	locationText.setSingleLine(false);
+        	locationText.setText(pro+",\n"+location.getCity());
+        	return;
+        }
+
+
+    }
 }
+

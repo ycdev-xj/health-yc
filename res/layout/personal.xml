@@ -78,7 +78,7 @@
 			        android:layout_below="@id/personal_name"
 			        android:layout_width="wrap_content"
 			        android:layout_height="wrap_content"
-			        android:layout_marginTop="15dp"
+			        android:layout_marginTop="5dp"
 			        android:drawableLeft="@drawable/btn_dw_nor"
 			        android:text="当前位置"
 			        android:textColor="@color/light"
