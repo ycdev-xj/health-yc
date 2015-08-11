@@ -62,7 +62,7 @@ public class LoginActivity extends KJActivity implements OnGestureListener{
 					editor.putString("loginName", loginName.getText().toString());
 					editor.commit();
 				}
-			}
+			}//t
 			super.handleMessage(msg);
 		}
 	};
