@@ -87,6 +87,10 @@ public class HttpUserRequest extends Thread {
 	//用户登录判断
 	public void loginRequest() {
 		HttpParams params = new HttpParams();
+		if (loginName==null) {
+			Logutil.Log("ERR:loginnameNull");
+			return;
+		}
 		try {
 			params.put("loginName", URLEncoder.encode(loginName, "utf-8"));
 			params.put("password", URLEncoder.encode(password, "utf-8"));
@@ -170,6 +174,10 @@ public class HttpUserRequest extends Thread {
 	//获得所有家庭成员
 	public void getMembersRequest() {
 		HttpParams params = new HttpParams();
+		if (loginName==null) {
+			Logutil.Log("ERR:loginnameNull");
+			return;
+		}
 		try {
 			params.put("loginName", URLEncoder.encode(loginName, "utf-8"));
 		} catch (UnsupportedEncodingException e) {
