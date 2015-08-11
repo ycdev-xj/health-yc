@@ -16,6 +16,7 @@ import org.kymjs.kjframe.http.HttpParams;
 import com.yc.health.R;
 import com.yc.health.model.MemberFamilyModel;
 import com.yc.health.model.MemberUserModel;
+import com.yc.health.util.Logutil;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -305,6 +306,10 @@ public class HttpUserRequest extends Thread {
 	public void getUserRequest() {
 		HttpParams params = new HttpParams();
 		try {
+			if (loginName==null) {
+				Logutil.Log("ERR:loginnameNull");
+				return;
+			}
 			params.put("loginName", URLEncoder.encode(loginName, "utf-8"));
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();

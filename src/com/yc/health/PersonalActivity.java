@@ -129,8 +129,8 @@ public class PersonalActivity extends KJActivity implements OnGestureListener{
 		String loginName = userPreferences.getString("loginName", null);
 		
 		HttpUserRequest request = new HttpUserRequest(aty,mHandler,6);
-		//request.getUserInit(loginName);
-		//request.start();
+		request.getUserInit(loginName);
+		request.start();
 	}
 	
 	private void init() {
